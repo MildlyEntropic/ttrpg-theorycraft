@@ -1,0 +1,16 @@
+{
+  "name": "ttrpg-optimizer-backend",
+  "version": "1.0.0",
+  "description": "TTRPG Combat Optimizer API",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.5.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
+  }
+}
