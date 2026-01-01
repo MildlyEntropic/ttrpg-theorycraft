@@ -18,20 +18,33 @@ Runs on port 3001.
 
 ### 2. Sync D&D 5e Data (First Time Only)
 
-After starting the backend, sync the spell database:
+After starting the backend, sync the database.
+
+**Option A: Full PHB from Wikidot (Recommended)**
 
 ```bash
-curl -X POST http://localhost:3001/api/sync/dnd5e-2014/spells
-curl -X POST http://localhost:3001/api/sync/dnd5e-2014/feats
+# 574 spells (includes all PHB spells)
+curl -X POST http://localhost:3001/api/sync/dnd5e-2014/wikidot-spells
+
+# 199 feats
+curl -X POST http://localhost:3001/api/sync/dnd5e-2014/wikidot-feats
+
+# 83 races/lineages
+curl -X POST http://localhost:3001/api/sync/dnd5e-2014/wikidot-lineages
+
+# 227 subclasses
+curl -X POST http://localhost:3001/api/sync/dnd5e-2014/wikidot-classes
 ```
 
-Or sync everything at once:
+Each sync takes 1-3 minutes due to rate limiting.
+
+**Option B: SRD Only from Open5e**
 
 ```bash
 curl -X POST http://localhost:3001/api/sync/dnd5e-2014
 ```
 
-This downloads ~2000 spells and 91 feats from Open5e.
+This only includes SRD 5.1 content (~300 spells, 91 feats).
 
 ### 3. Frontend (Terminal 2)
 
@@ -49,38 +62,54 @@ Open **http://localhost:5173** in your browser.
 
 ## Features
 
-### Character Optimizer (Original)
-- Enter character stats and feats
-- Get GWM/Sharpshooter breakpoints
-- Class-specific recommendations (Barbarian, Monk, Paladin)
-- Printable cheat sheet
-
-### Spell Browser (New)
-- Browse all 1954 D&D 5e spells
+### Spell Browser
+- Browse all D&D 5e spells
 - Filter by level, school, class, damage type
+- Source filter: wikidot (full PHB) or SRD only
 - Click any spell for detailed analysis:
   - Expected damage calculation
   - Hit/save probability
   - Slot efficiency rating
   - Tactical notes
+  - Damage type choice detection (Chromatic Orb, etc.)
 
-### Spell Comparison (New)
+### Spell Comparison
 - Compare up to 6 spells side-by-side
 - Set combat context (caster level, target AC, etc.)
 - See which spell deals the most damage
+
+### Character Optimizer
+- Enter character stats and feats
+- Get GWM/Sharpshooter breakpoints
+- Class-specific recommendations (Barbarian, Monk, Paladin)
+- Printable cheat sheet
 
 ## API Endpoints
 
 | Endpoint | Description |
 |----------|-------------|
 | `GET /api/health` | Health check |
-| `POST /api/sync/dnd5e-2014` | Sync all data from Open5e |
+| `POST /api/sync/dnd5e-2014/wikidot-spells` | Sync spells from wikidot |
+| `POST /api/sync/dnd5e-2014/wikidot-feats` | Sync feats from wikidot |
+| `POST /api/sync/dnd5e-2014/wikidot-lineages` | Sync races from wikidot |
+| `POST /api/sync/dnd5e-2014/wikidot-classes` | Sync classes from wikidot |
 | `GET /api/dnd5e-2014/spells` | List spells (with filters) |
 | `GET /api/dnd5e-2014/spells/:key` | Get spell details |
 | `GET /api/dnd5e-2014/spells/:key/analyze` | Analyze spell DPR |
 | `POST /api/dnd5e-2014/spells/compare` | Compare multiple spells |
 | `POST /api/optimize` | Character optimization |
 | `POST /api/cheatsheet` | Generate cheat sheet |
+
+## Database Contents
+
+After syncing from wikidot:
+
+| Resource | Count |
+|----------|-------|
+| Spells | 574 |
+| Feats | 199 |
+| Races/Lineages | 83 |
+| Subclasses | 227 |
 
 ## Summary
 
