@@ -100,6 +100,27 @@ Open **http://localhost:5173** in your browser.
 | `POST /api/optimize` | Character optimization |
 | `POST /api/cheatsheet` | Generate cheat sheet |
 
+### Export API (for dnd2014.wikidot.com)
+
+Export data in wikidot-compatible format for populating dnd2014.wikidot.com:
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/export/wikidot/summary` | Export summary with counts |
+| `GET /api/export/wikidot/spells` | All spells in wikidot format |
+| `GET /api/export/wikidot/spell/:key` | Single spell in wikidot format |
+| `GET /api/export/wikidot/feats` | All feats in wikidot format |
+| `GET /api/export/wikidot/lineages` | All races in wikidot format |
+
+Example:
+```bash
+# Get fireball in wikidot markup
+curl http://localhost:3001/api/export/wikidot/spell/wikidot_fireball
+
+# Export all spells (paginated)
+curl "http://localhost:3001/api/export/wikidot/spells?limit=50&offset=0"
+```
+
 ## Database Contents
 
 After syncing from wikidot:

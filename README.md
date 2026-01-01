@@ -54,6 +54,22 @@ POST /api/dnd5e-2014/spells/compare      # Compare spells
 POST /api/sync/dnd5e-2014/wikidot-spells # Sync wikidot spells
 ```
 
+## Wikidot Export (for dnd2014.wikidot.com)
+
+Export data in wikidot markup format to help populate the dnd2014 wiki:
+
+```
+GET /api/export/wikidot/summary          # What's available to export
+GET /api/export/wikidot/spells           # All spells (paginated)
+GET /api/export/wikidot/spell/:key       # Single spell with wikidot markup
+GET /api/export/wikidot/feats            # All feats
+GET /api/export/wikidot/lineages         # All races/lineages
+```
+
+**Current export counts**: 574 spells, 290 feats, 83 lineages, 23 classes
+
+Each export includes wikidot-formatted page content ready for copy-paste into the wiki editor.
+
 ## Architecture
 
 ```

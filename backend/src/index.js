@@ -5,6 +5,7 @@ import { generateCheatSheet } from './cheatsheet.js';
 import { getDb, closeDb } from './data/db.js';
 import syncRoutes from './api/routes/sync.js';
 import spellRoutes from './api/routes/spells.js';
+import exportRoutes from './api/routes/export.js';
 
 const app = express();
 app.use(cors());
@@ -33,6 +34,7 @@ app.get('/api/health', (req, res) => {
 // New API routes for D&D 5e
 app.use('/api/sync', syncRoutes);
 app.use('/api/dnd5e-2014/spells', spellRoutes);
+app.use('/api/export', exportRoutes);
 
 // Calculate optimal breakpoints for a character
 app.post('/api/optimize', (req, res) => {
