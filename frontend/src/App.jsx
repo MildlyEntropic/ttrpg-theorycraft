@@ -1,35 +1,38 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import CharacterForm from './components/CharacterForm';
 import ResultsPanel from './components/ResultsPanel';
 import CheatSheet from './components/CheatSheet';
 import { SpellBrowser, SpellComparison } from './components/spells';
+import { calculateBreakpoints, generateCheatSheet } from './lib/calculator.js';
+import { preloadAllData } from './lib/data.js';
 
 function App() {
   const [results, setResults] = useState(null);
   const [cheatsheet, setCheatsheet] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState('character'); // 'character' | 'spells' | 'compare'
+  const [dataLoading, setDataLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('character');
   const [activeView, setActiveView] = useState('results');
+
+  // Preload spell data on mount
+  useEffect(() => {
+    preloadAllData()
+      .then(() => setDataLoading(false))
+      .catch(err => {
+        console.error('Failed to preload data:', err);
+        setDataLoading(false);
+      });
+  }, []);
 
   const handleSubmit = async (character) => {
     setLoading(true);
     try {
-      // Get optimization results
-      const optimizeRes = await fetch('http://localhost:3001/api/optimize', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(character),
-      });
-      const optimizeData = await optimizeRes.json();
+      // Calculate locally - no API call needed
+      const optimizeData = calculateBreakpoints(character);
       setResults(optimizeData);
 
-      // Get cheat sheet
-      const cheatsheetRes = await fetch('http://localhost:3001/api/cheatsheet', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(character),
-      });
-      const cheatsheetData = await cheatsheetRes.json();
+      // Generate cheat sheet locally
+      const cheatsheetData = generateCheatSheet(character, optimizeData);
       setCheatsheet(cheatsheetData);
     } catch (error) {
       console.error('Error:', error);
@@ -52,12 +55,14 @@ function App() {
           <button
             className={`nav-tab ${activeTab === 'spells' ? 'active' : ''}`}
             onClick={() => setActiveTab('spells')}
+            disabled={dataLoading}
           >
-            Spell Browser
+            {dataLoading ? 'Loading...' : 'Spell Browser'}
           </button>
           <button
             className={`nav-tab ${activeTab === 'compare' ? 'active' : ''}`}
             onClick={() => setActiveTab('compare')}
+            disabled={dataLoading}
           >
             Compare Spells
           </button>

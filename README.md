@@ -1,90 +1,96 @@
 # TTRPG Theorycraft
 
-A system-agnostic TTRPG optimization engine, starting with D&D 5e (2014).
+A D&D 5e combat optimizer and spell analyzer. **Fully static** - deploys to Vercel/Netlify/GitHub Pages with zero backend.
 
 ## Features
 
+- **Spell Browser**: 2,500+ spells with filtering by level, school, class, damage type
 - **Spell Analysis**: DPR calculations, efficiency ratings, tactical notes
+- **Spell Comparison**: Compare up to 6 spells side-by-side
 - **Character Optimization**: GWM/Sharpshooter breakpoints, class-specific recommendations
-- **Full PHB Content**: 574 spells, 199 feats, 83 races, 227 subclasses from wikidot
+- **Cheat Sheets**: Printable combat reference cards
 
 ## Quick Start
 
 ```bash
-# Backend
-cd backend
-npm install
-npm start  # Port 3001
-
-# Frontend (separate terminal)
+# Install dependencies
 cd frontend
 npm install
-npm run dev  # Port 5173
+
+# Development
+npm run dev    # http://localhost:3000
+
+# Production build
+npm run build  # Output in frontend/dist/
 ```
 
-Then sync the database (first time only):
+## Deploy to Vercel/Netlify
+
+The `frontend/dist/` folder is a complete static site:
 
 ```bash
-# Full PHB content from wikidot (recommended)
-curl -X POST http://localhost:3001/api/sync/dnd5e-2014/wikidot-spells
-curl -X POST http://localhost:3001/api/sync/dnd5e-2014/wikidot-feats
-curl -X POST http://localhost:3001/api/sync/dnd5e-2014/wikidot-lineages
-curl -X POST http://localhost:3001/api/sync/dnd5e-2014/wikidot-classes
+# Build
+npm run build
 
-# Or SRD-only from Open5e
-curl -X POST http://localhost:3001/api/sync/dnd5e-2014
+# Deploy (Vercel)
+cd frontend
+npx vercel --prod
+
+# Or (Netlify)
+npx netlify deploy --prod --dir=dist
 ```
 
-Open **http://localhost:5173**
+**That's it.** No backend, no database, no environment variables.
+
+## Data
+
+All spell/feat/class data is pre-bundled as static JSON (~4MB total, ~400KB gzipped):
+
+| File | Contents |
+|------|----------|
+| `data/spells.json` | 2,528 spells |
+| `data/feats.json` | 290 feats |
+| `data/classes.json` | 23 classes with subclasses |
+
+### Updating Data
+
+The data comes from the backend's database. To refresh:
+
+```bash
+# Requires backend/node_modules to be installed
+node scripts/export-data.cjs
+
+# Then rebuild
+npm run build
+```
+
+## Architecture
+
+```
+frontend/
+  src/
+    lib/
+      calculator.js      # GWM breakpoints, combat math
+      spell-analyzer.js  # DPR analysis, AoE calculations
+      dice.js            # Dice expression parser
+      data.js            # Static JSON loader
+    components/          # React UI
+    hooks/               # React hooks for data
+  public/
+    data/                # Static JSON files
+  dist/                  # Production build output
+
+backend/                 # Only needed for data sync
+  data/ttrpg.db          # SQLite database
+  src/                   # Sync scripts (wikidot, Open5e)
+```
 
 ## Data Sources
 
 | Source | Content | License |
 |--------|---------|---------|
-| [dnd5e.wikidot.com](https://dnd5e.wikidot.com) | Full PHB (574 spells, 199 feats, 83 races, 227 subclasses) | CC-BY-SA 3.0 |
-| [Open5e](https://open5e.com) | SRD 5.1 only (~300 spells, 91 feats) | OGL |
-
-## API
-
-```
-GET  /api/dnd5e-2014/spells              # List spells
-GET  /api/dnd5e-2014/spells/:key         # Get spell
-GET  /api/dnd5e-2014/spells/:key/analyze # Analyze spell DPR
-POST /api/dnd5e-2014/spells/compare      # Compare spells
-POST /api/sync/dnd5e-2014/wikidot-spells # Sync wikidot spells
-```
-
-## Wikidot Export (for dnd2014.wikidot.com)
-
-Export data in wikidot markup format to help populate the dnd2014 wiki:
-
-```
-GET /api/export/wikidot/summary          # What's available to export
-GET /api/export/wikidot/spells           # All spells (paginated)
-GET /api/export/wikidot/spell/:key       # Single spell with wikidot markup
-GET /api/export/wikidot/feats            # All feats
-GET /api/export/wikidot/lineages         # All races/lineages
-```
-
-**Current export counts**: 574 spells, 290 feats, 83 lineages, 23 classes
-
-Each export includes wikidot-formatted page content ready for copy-paste into the wiki editor.
-
-## Architecture
-
-```
-backend/
-  src/
-    api/routes/          # Express routes
-    engine/calculator/   # Dice, probability math
-    systems/dnd5e-2014/  # D&D 5e specific logic
-      analyzers/         # Spell DPR, feat breakpoints
-      data/              # Sync scripts, DB queries
-frontend/
-  src/
-    components/          # React components
-    hooks/               # Data fetching hooks
-```
+| [dnd5e.wikidot.com](https://dnd5e.wikidot.com) | Full PHB content | CC-BY-SA 3.0 |
+| [Open5e](https://open5e.com) | SRD 5.1 | OGL |
 
 ## License
 

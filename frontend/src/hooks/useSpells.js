@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import * as api from '../services/api.js';
+import * as data from '../lib/data.js';
+import { analyzeSpell, compareSpells, getBestSpellsForSlot } from '../lib/spell-analyzer.js';
 
 // Hook for fetching spell list with filters
 export function useSpells(initialFilters = {}) {
@@ -14,9 +15,18 @@ export function useSpells(initialFilters = {}) {
     setError(null);
 
     try {
-      const result = await api.getSpells('dnd5e-2014', filters);
-      setSpells(result.spells);
-      setPagination(result.pagination);
+      const result = await data.getSpells(filters);
+      const limit = filters.limit || 100;
+      const offset = filters.offset || 0;
+
+      // Apply pagination locally
+      const paginatedSpells = result.slice(offset, offset + limit);
+
+      setSpells(paginatedSpells);
+      setPagination({
+        total: result.length,
+        hasMore: offset + limit < result.length
+      });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -60,7 +70,7 @@ export function useSpellStats() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    api.getSpellStats('dnd5e-2014')
+    data.getSpellStats()
       .then(setStats)
       .catch(err => setError(err.message))
       .finally(() => setLoading(false));
@@ -85,8 +95,8 @@ export function useSpellSearch() {
     setError(null);
 
     try {
-      const result = await api.searchSpells('dnd5e-2014', query, 20);
-      setResults(result.spells);
+      const result = await data.searchSpells(query, 20);
+      setResults(result);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -116,13 +126,15 @@ export function useSpellAnalysis(spellKey, context = {}) {
     setError(null);
 
     try {
-      const [spellData, analysisData] = await Promise.all([
-        api.getSpell('dnd5e-2014', spellKey),
-        api.analyzeSpell('dnd5e-2014', spellKey, context)
-      ]);
-
-      setSpell(spellData);
-      setAnalysis(analysisData);
+      const spellData = await data.getSpell(spellKey);
+      if (spellData) {
+        setSpell(spellData);
+        // Run analysis locally
+        const analysisData = analyzeSpell(spellData, context);
+        setAnalysis(analysisData);
+      } else {
+        setError('Spell not found');
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -153,7 +165,13 @@ export function useSpellComparison() {
     setError(null);
 
     try {
-      const result = await api.compareSpells('dnd5e-2014', spellKeys, context);
+      // Get all the spells first
+      const spellPromises = spellKeys.map(key => data.getSpell(key));
+      const spells = await Promise.all(spellPromises);
+      const validSpells = spells.filter(Boolean);
+
+      // Run comparison locally
+      const result = compareSpells(validSpells, context);
       setComparison(result);
     } catch (err) {
       setError(err.message);
@@ -179,8 +197,12 @@ export function useBestSpells(slotLevel, context = {}) {
     }
 
     setLoading(true);
-    api.getBestSpells('dnd5e-2014', slotLevel, context)
-      .then(result => setBestSpells(result.bestSpells))
+
+    data.getDamageSpells()
+      .then(spells => {
+        const result = getBestSpellsForSlot(spells, slotLevel, context);
+        setBestSpells(result);
+      })
       .catch(err => setError(err.message))
       .finally(() => setLoading(false));
   }, [slotLevel, JSON.stringify(context)]);
@@ -188,41 +210,16 @@ export function useBestSpells(slotLevel, context = {}) {
   return { bestSpells, loading, error };
 }
 
-// Hook for sync status
-export function useSyncStatus() {
-  const [status, setStatus] = useState(null);
+// Hook for filter options
+export function useFilterOptions() {
+  const [options, setOptions] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [syncing, setSyncing] = useState(false);
-  const [error, setError] = useState(null);
-
-  const fetchStatus = useCallback(async () => {
-    try {
-      const result = await api.getSyncStatus('dnd5e-2014');
-      setStatus(result.status);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
 
   useEffect(() => {
-    fetchStatus();
-  }, [fetchStatus]);
+    data.getFilterOptions()
+      .then(setOptions)
+      .finally(() => setLoading(false));
+  }, []);
 
-  const sync = useCallback(async (resource = null) => {
-    setSyncing(true);
-    setError(null);
-
-    try {
-      await api.syncData('dnd5e-2014', resource);
-      await fetchStatus();
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setSyncing(false);
-    }
-  }, [fetchStatus]);
-
-  return { status, loading, syncing, error, sync, refresh: fetchStatus };
+  return { options, loading };
 }

@@ -1,0 +1,69 @@
+{
+  "exportedAt": "2026-01-02T05:09:53.732Z",
+  "counts": {
+    "spells": 2528,
+    "feats": 290,
+    "classes": 23
+  },
+  "spellStats": {
+    "byLevel": {
+      "0": 187,
+      "1": 408,
+      "2": 438,
+      "3": 378,
+      "4": 280,
+      "5": 278,
+      "6": 202,
+      "7": 148,
+      "8": 110,
+      "9": 99
+    },
+    "bySchool": {
+      "Conjuration": 427,
+      "Evocation": 440,
+      "Transmutation": 524,
+      "Enchantment": 254,
+      "Abjuration": 269,
+      "Divination": 212,
+      "Necromancy": 238,
+      "Illusion": 163,
+      "Transformation": 1
+    },
+    "sources": [
+      "Adventurer's Guide",
+      "System Reference Document 5.2",
+      "System Reference Document 5.1",
+      "Player's Handbook",
+      "Deep Magic for 5th Edition",
+      "Spells That Don't Suck",
+      "Tasha's Cauldron of Everything",
+      "Xanathar's Guide to Everything",
+      "Guildmaster's Guide to Ravnica",
+      "Tasha's Cauldron of Everything/Sword Coast Adventurer's Guide",
+      "Unearthed Arcana 36 - Starter Spells",
+      "Warlock Zine",
+      "Xanathar's Guide to Everything/Elemental Evil Player's Companion",
+      "Unearthed Arcana 7 - Modern Magic",
+      "Explorer's Guide to Wildemount",
+      "Deep Magic Extended",
+      "Unearthed Arcana 70 - Spells and Magic Tattoos",
+      "Kobold Press Compilation",
+      "Unearthed Arcana 60 - The Artificer Returns",
+      "Tome of Heroes",
+      "Acquisitions Inc.",
+      "Icewind Dale - Rime of the Frostmaiden",
+      "Unearthed Arcana 66 - Fighter, Rogue, and Wizard",
+      "Open5e Originals",
+      "Strixhaven: A Curriculum of Chaos",
+      "Spelljammer: Adventures in Space - Astral Adventurer's Guide",
+      "Lost Laboratory of Kwalish",
+      "Unearthed Arcana 78 - Draconic Options",
+      "Unearthed Arcana 71 - Psionic Options Revisited",
+      "Fizban's Treasury of Dragons",
+      "The Book of Many Things",
+      "Unearthed Arcana 85 - Wonders of the Multiverse",
+      "Planescape - Adventures in the Multiverse",
+      "Unearthed Arcana 11 - That Old Black Magic"
+    ]
+  }
+}

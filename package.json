@@ -1,0 +1,22 @@
+{
+  "name": "ttrpg-theorycraft",
+  "version": "2.0.0",
+  "description": "D&D 5e Combat Optimizer - Static site with spell analysis and character optimization",
+  "type": "module",
+  "scripts": {
+    "dev": "npm run dev --prefix frontend",
+    "build": "npm run build --prefix frontend",
+    "preview": "npm run preview --prefix frontend",
+    "export-data": "node scripts/export-data.cjs",
+    "rebuild-data": "npm run export-data && npm run build"
+  },
+  "keywords": [
+    "dnd",
+    "5e",
+    "ttrpg",
+    "optimizer",
+    "spell-analyzer"
+  ],
+  "author": "",
+  "license": "MIT"
+}
