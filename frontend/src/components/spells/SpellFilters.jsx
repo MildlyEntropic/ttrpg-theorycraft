@@ -60,13 +60,11 @@ export default function SpellFilters({ filters, onFilterChange, stats }) {
             })}
           >
             <option value="">All Levels</option>
-            <option value="0">Cantrip</option>
+            <option value="0">Cantrip{stats?.byLevel?.[0] ? ` (${stats.byLevel[0]})` : ''}</option>
             {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(level => (
               <option key={level} value={level}>
                 Level {level}
-                {stats?.byLevel?.find(s => s.level === level)
-                  ? ` (${stats.byLevel.find(s => s.level === level).count})`
-                  : ''}
+                {stats?.byLevel?.[level] ? ` (${stats.byLevel[level]})` : ''}
               </option>
             ))}
           </select>

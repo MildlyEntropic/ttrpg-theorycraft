@@ -96,7 +96,13 @@ export async function searchSpells(query, limit = 20) {
 // Get spell stats (counts by level, school, etc.)
 export async function getSpellStats() {
   const metadata = await loadMetadata();
-  return metadata.spellStats;
+  const spells = await loadSpells();
+
+  return {
+    ...metadata.spellStats,
+    total: metadata.counts.spells,
+    damageSpells: spells.filter(s => s.damageRoll).length
+  };
 }
 
 // Get damage spells only
